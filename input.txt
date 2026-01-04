@@ -1,0 +1,61 @@
+--- NHÓM SỐ VÀ ĐƠN VỊ (SỐ + CHỮ DÍNH LIỀN) ---
+50kg
+1.5m
+100km/h
+250ml
+37°C
+100%
+12tháng
+500k
+2.5tỷ
+60phút
+
+NHÓM CHỮ VÀ SỐ (CHỮ + SỐ DÍNH LIỀN)
+ngóm chữ và số dính liền
+No.10
+Số05
+MãSP12345
+LôA1
+iPhone15
+U23ViệtNam
+GenZ9x
+Tầng12B
+SizeXL39
+KênhVTV3
+
+--- NHÓM NGÀY THÁNG VÀ THỜI GIAN ---
+01/01/2024
+2024-05-20
+15h30
+10:45am
+Ngày20/10
+Tháng12/2023
+QuýI/2024
+20/11/1995
+
+--- NHÓM SỐ THẬP PHÂN VÀ PHÂN CÁCH NGHÌN ---
+1,234,567.89
+1.234.567,89
+10.000.000đ
+0.005
+.5 (trường hợp thiếu số 0)
+10,5 (kiểu Việt Nam)
+1.000 (một nghìn)
+1.00 (một phẩy không không)
+
+--- NHÓM KHOẢNG GIÁ TRỊ VÀ KÝ HIỆU ĐẶC BIỆT ---
+10-20kg
+30~40m
+50.000VND-100.000VND
+Giá>500k
+Số lượng:10
+Độ ẩm<80%
+
+--- NHÓM CÂU HỖN HỢP PHỨC TẠP ---
+Diện tích 50m2 giá 2.5tỷ
+Nhiệt độ từ 30°C-35°C
+Giảm giá 10% cho đơn hàng >500k
+Tòa nhà A1 tầng 15 phòng 1502
+Dùng 2lít nước mỗi ngày
+Nặng 70.5kg cao 1m75
+Năm 2024 có 366ngày
