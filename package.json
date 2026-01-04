@@ -2,7 +2,7 @@
   "name": "vinorm",
   "version": "1.0.1",
   "description": "",
-  "main": "src/index.js",
+  "main": "src/index.ts",
   "scripts": {
     "test": "ts-node test/index.test.ts"
   },
