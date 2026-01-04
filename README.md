@@ -1,4 +1,3 @@
-```markdown
 # Vietnamese Text Normalizer
 
 A Node.js library for normalizing Vietnamese text, converting abbreviations, numbers, dates, addresses, measurements, and special cases into readable forms. This is useful for Text-to-Speech (TTS) systems, data preprocessing, or any application requiring phonetic or expanded text representation in Vietnamese.
@@ -177,4 +176,3 @@ MIT License. See [LICENSE](LICENSE) for details.
 ## Acknowledgments
 
 Based on ICU (International Components for Unicode) patterns adapted for Vietnamese text normalization.
-```
