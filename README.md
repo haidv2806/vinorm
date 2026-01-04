@@ -4,8 +4,9 @@ A Node.js library for normalizing Vietnamese text, converting abbreviations, num
 
 The library handles:
 - Numbers (e.g., "123" → "một trăm hai mươi ba")
+- Comparisons and shorthand numbers (e.g., "200k > 500k" → hai trăm ca lớn hơn năm trăm ca)
 - Dates and times (e.g., "01/01/2023" → "một tháng một năm hai nghìn không trăm hai mươi ba")
-- Addresses (e.g., "123 Đường ABC, Q.1, TP.HCM" → expanded form)
+- Addresses (e.g., "123 Đường ABC, Q.1, TP.HCM" → "một trăm hai mươi ba đường abc , quận một , thành phố hồ chí minh")
 - Measurements and units (e.g., "10km" → "mười ki lô mét")
 - Acronyms, symbols, and special cases (e.g., emails, websites, phone numbers)
 - Roman numerals, math expressions, and more.
@@ -23,7 +24,7 @@ npm install vinorm
 ## Quick Start
 
 ```javascript
-const { TextNormalizer } = require('vietnamese-text-normalizer');
+cont TextNormalizer from vinorm
 
 const normalizer = new TextNormalizer();
 const input = "Ngày 01/01/2023, tại 123 Đ. ABC, Q.1, TP.HCM. SĐT: 0123456789. Email: example@gmail.com. Đo lường: 10km/h.";
