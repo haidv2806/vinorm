@@ -1,14 +1,8 @@
-import * as path from 'path';
-import * as fs from 'fs';
+// SpecialCase.ts (Sửa để sử dụng dữ liệu JSON thay vì fs)
 import { ICUMapping } from './ICUMapping';
 import { ICUNumberConverting } from './ICUNumberConverting';
 
-const BASE_DIR = __dirname;
-const REGEX_FOLDER = path.join(BASE_DIR, 'RegexRule');
-const MAPPING_FOLDER = path.join(BASE_DIR, 'Mapping');
-
 export class SpecialCase {
-    // Categories
     private static readonly PHONE_NUMBER = 0;
     private static readonly FOOTBALL_UNDER = 1;
     private static readonly FOOTBALL_OTHER = 2;
@@ -18,51 +12,42 @@ export class SpecialCase {
     private patterns: Map<number, string[]> = new Map();
     private numberConverter: ICUNumberConverting = new ICUNumberConverting();
 
-    // Khai báo sẵn các mapping để dùng chung, tránh đọc file nhiều lần
     private letterSoundVN = new ICUMapping();
     private letterSoundEN = new ICUMapping();
     private numMapping = new ICUMapping();
     private symbolMapping = new ICUMapping();
 
-    constructor() {
+    constructor(
+        phoneNumberPatterns: string[],
+        footballUnderPatterns: string[],
+        footballOtherPatterns: string[],
+        websitePatterns: string[],
+        emailPatterns: string[],
+        letterSoundVNData: Record<string, string>,
+        symbolData: Record<string, string>,
+        letterSoundENData: Record<string, string>,
+        numberData: Record<string, string>
+    ) {
         this.numberConverter = new ICUNumberConverting();
 
-        // Load tất cả mapping một lần
-        const mappingDir = MAPPING_FOLDER;
-        this.letterSoundVN.loadMappingFile(path.join(mappingDir, 'LetterSoundVN.txt'));
-        this.letterSoundVN.loadMappingFile(path.join(mappingDir, 'Symbol.txt'));
+        this.letterSoundVN.loadMappingData('LetterSoundVN', letterSoundVNData);
+        this.letterSoundVN.loadMappingData('Symbol', symbolData);
 
-        this.letterSoundEN.loadMappingFile(path.join(mappingDir, 'LetterSoundEN.txt'));
-        this.letterSoundEN.loadMappingFile(path.join(mappingDir, 'Symbol.txt'));
+        this.letterSoundEN.loadMappingData('LetterSoundEN', letterSoundENData);
+        this.letterSoundEN.loadMappingData('Symbol', symbolData);
 
-        this.numMapping.loadMappingFile(path.join(mappingDir, 'Number.txt'));
+        this.numMapping.loadMappingData('Number', numberData);
 
-        // Load patterns
-        this.loadPatterns(SpecialCase.PHONE_NUMBER, 'PhoneNumber.txt');
-        this.loadPatterns(SpecialCase.FOOTBALL_UNDER, 'FootballUnder.txt');
-        this.loadPatterns(SpecialCase.FOOTBALL_OTHER, 'FootballOther.txt');
-        this.loadPatterns(SpecialCase.WEBSITE, 'Website.txt');
-        this.loadPatterns(SpecialCase.EMAIL, 'Email.txt');
+        this.loadPatterns(SpecialCase.PHONE_NUMBER, phoneNumberPatterns);
+        this.loadPatterns(SpecialCase.FOOTBALL_UNDER, footballUnderPatterns);
+        this.loadPatterns(SpecialCase.FOOTBALL_OTHER, footballOtherPatterns);
+        this.loadPatterns(SpecialCase.WEBSITE, websitePatterns);
+        this.loadPatterns(SpecialCase.EMAIL, emailPatterns);
     }
 
-    private loadPatterns(category: number, filename: string): void {
-        const filePath = path.join(REGEX_FOLDER, filename);
-        try {
-            const content = fs.readFileSync(filePath, 'utf-8');
-            const lines = content
-                .split(/\r?\n/)
-                .map(line => line.trim())
-                .filter(line => line.length > 0 && !line.startsWith('#')); // Bỏ comment nếu có
-
-            // Xử lý (?i) flag (JavaScript không hỗ trợ inline flag như ICU)
-            const processed = lines.map(pattern => {
-                return pattern.replace(/^\(\?i\)/i, ''); // Bỏ (?i) nếu có
-            });
-
-            this.patterns.set(category, processed);
-        } catch (err) {
-            console.error(`[SpecialCase] Không thể đọc file pattern: ${filename}`, err);
-        }
+    private loadPatterns(category: number, patterns: string[]): void {
+        const processed = patterns.map(pattern => pattern.replace(/^\(\?i\)/i, ''));
+        this.patterns.set(category, processed);
     }
 
     public normalizeText(input: string): string {
@@ -71,8 +56,7 @@ export class SpecialCase {
         for (const [category, regexStrings] of this.patterns.entries()) {
             for (const patternStr of regexStrings) {
                 try {
-                    // Sử dụng flag 'u' cho Unicode và 'g' để replace toàn bộ
-                    const regex = new RegExp(patternStr, "ug");
+                    const regex = new RegExp(patternStr, "ugi");
 
                     currentText = currentText.replace(regex, (match) => {
                         return ` ${this.stringForReplace(category, match)} `;

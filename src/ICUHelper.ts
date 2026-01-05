@@ -14,10 +14,6 @@ const LATIN_SMALL_LETTER_A = 'a'.charCodeAt(0);
 const LATIN_CAPITAL_LETTER_A = 'A'.charCodeAt(0);
 const VERTICAL_LINE = '|'.charCodeAt(0);
 const COMMA = ','.charCodeAt(0);
-const REGEX_FOLDER = ''; // Adjust as needed
-const MAPPING_FOLDER = ''; // Adjust as needed
-const F_UNIT_MAPPING_BASE = ''; // Adjust as needed
-const F_PREFIX_UNIT = ''; // Adjust as needed
 
 export class ICUHelper {
     static removeExtraWhitespace(input: string): string {
@@ -45,14 +41,12 @@ export class ICUHelper {
         return result;
     }
 
-    static splitCompositeUnit(unit: string): string {
+    static splitCompositeUnit(unit: string, baseUnitData: Record<string, string>, prefixData: Record<string, string>): string {
         const baseUnit = new ICUMapping();
-        const baseUnitPath = `${MAPPING_FOLDER}/${F_UNIT_MAPPING_BASE}`;
-        baseUnit.loadMappingFile(baseUnitPath);
+        baseUnit.loadMappingData("BaseUnit", baseUnitData);
 
         const prefixDict = new ICUMapping();
-        const prefixUnitPath = `${MAPPING_FOLDER}/${F_PREFIX_UNIT}`;
-        prefixDict.loadMappingFile(prefixUnitPath);
+        prefixDict.loadMappingData("PrefixUnit", prefixData);
 
         let normalizedText = '';
         if (unit.length < 2 || baseUnit.hasMappingOf(unit)) {
@@ -102,12 +96,12 @@ export class ICUHelper {
         else return normalizedText;
     }
 
-    static normalizeUnit(unit: string): string {
+    static normalizeUnit(unit: string, baseUnitData: Record<string, string>, prefixData: Record<string, string>): string {
         let normalizedText = '';
         const compositeUnits = ICUHelper.splitFractionUnit(unit);
         for (let i = 0; i < compositeUnits.length; i++) {
             // console.log('Unit: ' + compositeUnits[i]);
-            normalizedText += ' ' + ICUHelper.splitCompositeUnit(compositeUnits[i]) + ' ';
+            normalizedText += ' ' + ICUHelper.splitCompositeUnit(compositeUnits[i], baseUnitData, prefixData) + ' ';
             if (compositeUnits.length > 1 && i !== compositeUnits.length - 1) {
                 normalizedText += ' trên ';
             }

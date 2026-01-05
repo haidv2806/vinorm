@@ -1,7 +1,7 @@
 // ICUNumberConverting.ts
 const DIGIT_ZERO = '0'.charCodeAt(0);
 const SPACE = ' ';
-const COMMA_CHAR = ','; // For replacement, using string
+const COMMA_CHAR = ', '; // For replacement, using string
 
 export class ICUNumberConverting {
     private CHU_SO: string[] = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];

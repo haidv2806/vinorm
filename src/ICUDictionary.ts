@@ -1,30 +1,26 @@
-// ICUDictionary.ts
-import * as fs from 'fs';
-
+// ICUDictionary.ts (Sửa để sử dụng dữ liệu JSON thay vì fs)
 export class ICUDictionary {
     private dict: Set<string> = new Set();
     private dictName: string = '';
 
     constructor() {}
 
-    loadDictFile(name: string): boolean {
+    // Thay vì load từ file, load từ array JSON
+    loadDictData(name: string, data: string[]): boolean {
         this.dictName = name;
-        let content: string;
         try {
-            content = fs.readFileSync(name, 'utf8');
+            data.forEach((line) => {
+                const trimmed = line.trim();
+                if (trimmed) {
+                    this.dict.add(trimmed);
+                }
+            });
+            // console.log(`[L] Add words to dictionary ${name} successfully`);
+            return true;
         } catch (e) {
-            console.error(`[E] Cannot load file ${name} for dictionary`);
+            console.error(`[E] Cannot load data for dictionary ${name}`);
             return false;
         }
-        const lines = content.split('\n');
-        for (let line of lines) {
-            line = line.trim();
-            if (line) {
-                this.dict.add(line);
-            }
-        }
-        // console.log(`[L] Add words to dictionary ${name} successfully`);
-        return true;
     }
 
     hasWord(input: string): boolean {

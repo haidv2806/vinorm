@@ -1,32 +1,23 @@
-// ICUMapping.ts
-import * as fs from 'fs';
-
+// ICUMapping.ts (Sửa để sử dụng dữ liệu JSON thay vì fs)
 export class ICUMapping {
     private mapping: Map<string, string> = new Map();
     private mappingName: string = '';
 
     constructor() {}
 
-    loadMappingFile(name: string): boolean {
+    // Thay vì load từ file, load từ object JSON
+    loadMappingData(name: string, data: Record<string, string>): boolean {
         this.mappingName = name;
-        let content: string;
         try {
-            content = fs.readFileSync(name, 'utf8');
+            Object.entries(data).forEach(([key, value]) => {
+                this.mapping.set(key.trim(), value.trim());
+            });
+            // console.log(`[L] Add words to map ${name} successfully`);
+            return true;
         } catch (e) {
-            console.error(`[E] Cannot load file ${name} for mapping`);
+            console.error(`[E] Cannot load data for mapping ${name}`);
             return false;
         }
-        const lines = content.split('\n');
-        for (let line of lines) {
-            const separatorPosition = line.indexOf('#');
-            if (separatorPosition !== -1) {
-                let unit = line.substring(0, separatorPosition).trim();
-                let pronoun = line.substring(separatorPosition + 1).trim();
-                this.mapping.set(unit, pronoun);
-            }
-        }
-        // console.log(`[L] Add words to map ${name} successfully`);
-        return true;
     }
 
     mappingOf(unit: string): string {

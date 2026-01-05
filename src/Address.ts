@@ -1,30 +1,13 @@
-import * as fs from "fs";
-import * as path from "path";
-
-import { ICUNumberConverting } from "./ICUNumberConverting"; // Assuming implementation exists
-import { ICUMapping } from "./ICUMapping"; // Assuming implementation exists
-import { ICUDictionary } from "./ICUDictionary"; // Assuming implementation exists
-
-/* ================== PATH CONSTANTS ================== */
-
-const BASE_DIR = __dirname;
-
-const REGEX_FOLDER = path.join(BASE_DIR, "RegexRule");
-const MAPPING_FOLDER = path.join(BASE_DIR, "Mapping");
-const DICT_FOLDER = path.join(BASE_DIR, "Dict");
-
-/* ================== ADDRESS ================== */
+// Address.ts (Sửa để sử dụng dữ liệu JSON thay vì fs)
+import { ICUNumberConverting } from "./ICUNumberConverting";
+import { ICUMapping } from "./ICUMapping";
+import { ICUDictionary } from "./ICUDictionary";
 
 export class Address {
     private static readonly POLITICAL_DIVISION = 0;
     private static readonly STREET = 1;
     private static readonly OFFICE = 2;
     private static readonly CODENUMBER = 3;
-
-    private readonly F_POLITICAL_DIVISION = "PoliticalDivision.txt";
-    private readonly F_STREET = "Street.txt";
-    private readonly F_OFFICE = "Office.txt";
-    private readonly F_CODENUMBER = "Codenumber.txt";
 
     private patterns = new Map<number, string[]>();
 
@@ -33,70 +16,52 @@ export class Address {
     private letterVN!: ICUMapping;
     private popularWord!: ICUDictionary;
 
-    constructor() {
-        this.initHelpers();
-
-        this.loadPatterns(Address.POLITICAL_DIVISION, this.F_POLITICAL_DIVISION);
-        this.loadPatterns(Address.STREET, this.F_STREET);
-        this.loadPatterns(Address.OFFICE, this.F_OFFICE);
-        this.loadPatterns(Address.CODENUMBER, this.F_CODENUMBER);
-    }
-
-    /* ========== INIT ========== */
-
-    private initHelpers() {
-        this.converter = new ICUNumberConverting(); // Assuming constructor exists
+    constructor(
+        politicalDivisionPatterns: string[],
+        streetPatterns: string[],
+        officePatterns: string[],
+        codeNumberPatterns: string[],
+        letterSoundVNData: Record<string, string>,
+        letterVNSoundData: Record<string, string>, // Giả sử là LetterSoundVN.txt, nhưng có thể trùng
+        popularData: string[],
+        symbolData?: Record<string, string> // Thêm optional để load symbol nếu cần
+    ) {
+        this.converter = new ICUNumberConverting();
 
         this.letterVN = new ICUMapping();
-        this.letterVN.loadMappingFile(
-            path.join(MAPPING_FOLDER, "LetterSoundVN.txt")
-        );
+        this.letterVN.loadMappingData("LetterSoundVN", letterVNSoundData);
 
         this.letterSound = new ICUMapping();
-        this.letterSound.loadMappingFile(
-            path.join(MAPPING_FOLDER, "LetterSoundVN.txt")
-        );
-        this.letterSound.loadMappingFile(
-            path.join(MAPPING_FOLDER, "Symbol.txt")
-        );
+        this.letterSound.loadMappingData("LetterSoundVN", letterSoundVNData);
+        if (symbolData) {
+            this.letterSound.loadMappingData("Symbol", symbolData); // Load thêm symbol như C++
+        }
 
         this.popularWord = new ICUDictionary();
-        this.popularWord.loadDictFile(
-            path.join(DICT_FOLDER, "Popular.txt")
-        );
+        this.popularWord.loadDictData("Popular", popularData);
+
+        this.patterns = new Map<number, string[]>([
+            [Address.POLITICAL_DIVISION, politicalDivisionPatterns.map(p => this.processPattern(p))],
+            [Address.STREET, streetPatterns.map(p => this.processPattern(p))],
+            [Address.OFFICE, officePatterns.map(p => this.processPattern(p))],
+            [Address.CODENUMBER, codeNumberPatterns.map(p => this.processPattern(p))]
+        ]);
     }
 
-    private loadPatterns(category: number, filename: string): void {
-        const file = path.join(REGEX_FOLDER, filename);
-        try {
-            const content = fs.readFileSync(file, "utf8");
-            const lines = content
-                .split(/\r?\n/)
-                .map((line) => line.trim())
-                .filter((line) => line.length > 0);
-
-            const processedPatterns = lines.map((pattern) => this.processPattern(pattern));
-            this.patterns.set(category, processedPatterns);
-        } catch (err) {
-            console.error(`[E] Error reading pattern file: ${filename}`);
-        }
+    private loadPatterns(category: number, patterns: string[]): void {
+        const processedPatterns = patterns.map((pattern) => this.processPattern(pattern));
+        this.patterns.set(category, processedPatterns);
     }
 
     private processPattern(pattern: string): string {
-        // Remove (?i) or similar inline flags since JS doesn't support them in the pattern
-        // Assume all start with (?i), strip it and use 'i' flag later when compiling RegExp
         if (pattern.startsWith('(?i)')) {
-            return pattern.slice(4); // Remove '(?i)'
+            return pattern.slice(4);
         }
-        // If there are other inline modifiers, handle accordingly; for now, assume only (?i)
         return pattern;
     }
 
-    /* ========== PUBLIC API ========== */
-
     public normalizeText(input: string): string {
         let preResult = input;
-        let result = "";
         for (const [cat, regexPatterns] of this.patterns) {
             for (const pattern of regexPatterns) {
                 try {
@@ -111,8 +76,6 @@ export class Address {
         }
         return preResult.replace(/\s+/g, " ").trim();
     }
-
-    /* ========== DISPATCH ========== */
 
     private stringForReplace(cat: number, match: string, p1: string): string {
         switch (cat) {
@@ -129,8 +92,6 @@ export class Address {
                 return "";
         }
     }
-
-    /* ========== HANDLERS ========== */
 
     private expandPrefixPD(prefix: string): string {
         prefix = prefix.toLowerCase();
@@ -149,9 +110,9 @@ export class Address {
         const expandPrefix = this.expandPrefixPD(prefix);
         const indexOfPoint = match.indexOf(".");
         if (indexOfPoint !== -1) {
-            return expandPrefix + match.slice(indexOfPoint + 1);
+            return expandPrefix + " " + match.slice(indexOfPoint + 1);
         } else {
-            return expandPrefix + match.slice(prefix.length);
+            return expandPrefix + " " + match.slice(prefix.length);
         }
     }
 
@@ -162,11 +123,11 @@ export class Address {
         let number = "";
         for (const c of mainPart) {
             const code = c.charCodeAt(0);
-            if (48 <= code && code <= 57) {
+            if (48 <= code && code <= 57) { // '0' to '9'
                 if (continuousDigits) {
                     number += c;
                 } else {
-                    if (code === 48) {
+                    if (code === 48) { // '0'
                         continuousDigits = false;
                         result += "không ";
                         number = "";
@@ -211,11 +172,11 @@ export class Address {
         let number = "";
         for (const c of mainPart) {
             const code = c.charCodeAt(0);
-            if (48 <= code && code <= 57) {
+            if (48 <= code && code <= 57) { // '0' to '9'
                 if (continuousDigits) {
                     number += c;
                 } else {
-                    if (code === 48) {
+                    if (code === 48) { // '0'
                         continuousDigits = false;
                         result += "không ";
                         number = "";

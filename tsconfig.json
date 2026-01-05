@@ -4,9 +4,15 @@
     "module": "CommonJS",
     "lib": ["ESNext"],
     "strict": true,
+
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist"
-  }
+  },
+  "include": ["src", "data"],
+  "exclude": ["node_modules", "dist"]
 }
