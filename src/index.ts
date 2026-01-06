@@ -38,7 +38,7 @@ import date2Patterns from "../data/RegexRule/Date_2.json";
 
 // Math
 import romanNumberPatterns from "../data/RegexRule/NormalNumber.json";
-import measurementPatterns from "../data/RegexRule/measurement.json";
+import measurementPatterns from "../data/RegexRule/Measurement.json";
 import measurement1Patterns from "../data/RegexRule/Measurement_1.json";
 import normalNumberPatterns from "../data/RegexRule/NormalNumber.json";
 import baseUnit from "../data/Mapping/BaseUnit.json";
@@ -86,4 +86,4 @@ const normalizer = new TextNormalizer({
     codeNumberPatterns,
 });
 
-export default normalizer as TextNormalizer;
+export default normalizer;
