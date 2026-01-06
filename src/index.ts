@@ -48,7 +48,7 @@ import currencyUnit from "../data/Mapping/CurrencyUnit.json";
 import politicalDivisionPatterns from "../data/RegexRule/PoliticalDivision.json";
 import streetPatterns from "../data/RegexRule/Street.json";
 import officePatterns from "../data/RegexRule/Office.json";
-import codeNumberPatterns from "../data/RegexRule/CodeNumber.json";
+import codeNumberPatterns from "../data/RegexRule/Codenumber.json";
 
 const normalizer = new TextNormalizer({
     acronymsShorten,
