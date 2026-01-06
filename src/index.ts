@@ -50,7 +50,7 @@ import streetPatterns from "../data/RegexRule/Street.json";
 import officePatterns from "../data/RegexRule/Office.json";
 import codeNumberPatterns from "../data/RegexRule/Codenumber.json";
 
-const normalizer = new TextNormalizer({
+const vinorm = new TextNormalizer({
     acronymsShorten,
     teencode,
     symbol,
@@ -86,4 +86,4 @@ const normalizer = new TextNormalizer({
     codeNumberPatterns,
 });
 
-export default normalizer;
+export default vinorm;

@@ -24,9 +24,9 @@ npm install vinorm
 ## Quick Start
 
 ```javascript
-cont TextNormalizer from vinorm
+cont vinorm from vinorm
 
-const normalizer = new TextNormalizer();
+const normalizer = new vinorm();
 const input = "Ngày 01/01/2023, tại 123 Đ. ABC, Q.1, TP.HCM. SĐT: 0123456789. Email: example@gmail.com. Đo lường: 10km/h.";
 const options = { lower: true, punc: false, unknown: false };
 
@@ -66,7 +66,7 @@ Normalizes the input text.
 #### Example
 
 ```javascript
-const normalizer = new TextNormalizer();
+const normalizer = new vinorm();
 const normalized = normalizer.normalize("iPhone 15 ra mắt ngày 12/09/2023 với giá 999 USD.", { lower: true });
 console.log(normalized);
 // Output: "ai phone mười lăm ra mắt ngày mười hai tháng chín năm hai nghìn không trăm hai mươi ba với giá chín trăm chín mươi chín đô la mỹ ."
